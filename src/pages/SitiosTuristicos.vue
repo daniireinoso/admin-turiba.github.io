@@ -48,14 +48,20 @@
         </q-btn>
         <q-img :src="place.image"></q-img>
         <q-card-section>
-          <div class="row no-wrap items-center">
-            <div class="text-subtitle1 text-white" v-text="place.topics"></div>
+          <div class="items-center">
+            <div
+              style="text-align: left; width: fit-content"
+              v-for="topic in place.topics"
+              :key="topic"
+            >
+              <div class="text-subtitle1 text-white">{{ topic }}</div>
+            </div>
             <div
               class="col-auto text-grey text-caption q-pt-md row no-wrap"
-              style="margin-left: auto"
+              style="margin-left: auto; width: fit-content; margin-top: -4em"
             >
               <q-icon name="place"></q-icon>
-              250 ft
+              {{ place.location }}
             </div>
           </div>
         </q-card-section>
@@ -72,7 +78,7 @@
 import { defineComponent } from "vue";
 import NuevoSitioTuristico from "../components/NuevoSitioTuristico";
 import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
-import firebase from "src/boot/firebase";
+import { firebase } from "src/boot/firebase";
 export default defineComponent({
   name: "SitiosTuristicos",
   data() {
@@ -82,21 +88,26 @@ export default defineComponent({
     };
   },
   mounted() {
-    loadPlaces();
+    this.loadPlaces();
   },
   methods: {
     async loadPlaces() {
-      const placesCollection = collection(this.$firebase, "places");
+      const placesCollection = collection(firebase, "places");
       const citySnapshot = await getDocs(placesCollection);
       const cityList = citySnapshot.docs.map((doc) => doc.data());
-      console.log(cityList);
-      return cityList;
+      this.places = cityList;
     },
     nuevoSitio() {
       this.nuevo = true;
     },
-    nuevoPlace(val) {
+    async nuevoPlace(val) {
       this.places.push(val);
+      // const placesCollection = collection(firebase, "places");
+      // const docRef = await setDoc(collection(firebase, "places"), {
+      //   name: val.name,
+      //   description: val.description,
+      // });
+      // console.log("Document written with ID: ", docRef.id);
     },
     deleteSitio(val) {
       console.log(val);
